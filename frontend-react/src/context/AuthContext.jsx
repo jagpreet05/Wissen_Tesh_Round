@@ -2,34 +2,46 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import { authApi, login as apiLogin } from '../api/client'
 
 /**
- * AuthContext — global auth state shared by all components.
+ * AuthContext — global auth + user profile state.
  *
  * Exposes:
- *   user        — { username } when logged in, null when not
- *   loading     — true while checking session on mount
- *   login(u,p)  — POST /login, sets user on success, throws on failure
- *   logout()    — POST /api/auth/logout, clears user
+ *   user        — full profile { username, employeeId, name, batch, team, role, designatedSeat }
+ *                 null when not logged in
+ *   loading     — true while checking session on first mount
+ *   login(u,p)  — POST /login → GET /api/auth/me → sets user
+ *   logout()    — POST /api/auth/logout → clears user
+ *
+ * Session persistence:
+ *   On every page load (mount), AuthContext calls /api/auth/me.
+ *   If the JSESSIONID cookie is still valid, the backend returns the profile
+ *   and the user stays logged in without re-entering credentials.
  */
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null)
-    const [loading, setLoading] = useState(true)   // checking session on mount
+    const [loading, setLoading] = useState(true)
 
-    // On first load, verify if an active session exists
+    // ── On mount: restore session from existing cookie ──────────────────
     useEffect(() => {
         authApi.me()
-            .then(data => setUser(data))
+            .then(profile => setUser(profile))
             .catch(() => setUser(null))
             .finally(() => setLoading(false))
     }, [])
 
+    // ── Login: POST /login → fetch full profile → store ─────────────────
     const login = useCallback(async (username, password) => {
-        const data = await apiLogin(username, password)
-        setUser({ username: data.user })
-        return data
+        // Step 1: authenticate (sets JSESSIONID cookie)
+        await apiLogin(username, password)
+
+        // Step 2: fetch full profile using the new session
+        const profile = await authApi.me()
+        setUser(profile)
+        return profile
     }, [])
 
+    // ── Logout: invalidate session → clear state ─────────────────────────
     const logout = useCallback(async () => {
         await authApi.logout().catch(() => { })
         setUser(null)
@@ -42,9 +54,9 @@ export function AuthProvider({ children }) {
     )
 }
 
-/** Hook — access auth context from any component. */
+/** Hook — use auth + user profile from any component. */
 export function useAuth() {
     const ctx = useContext(AuthContext)
-    if (!ctx) throw new Error('useAuth must be inside AuthProvider')
+    if (!ctx) throw new Error('useAuth must be inside <AuthProvider>')
     return ctx
 }

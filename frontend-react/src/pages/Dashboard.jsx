@@ -4,6 +4,7 @@ import { getDashboardStats, getSeatStatus, getWeeklyCalendar } from '../api/clie
 import StatCard from '../components/StatCard'
 import SeatGrid from '../components/SeatGrid'
 import CalendarTable from '../components/CalendarTable'
+import ActionPanel from '../components/ActionPanel'
 import './Dashboard.css'
 
 export default function Dashboard() {
@@ -16,7 +17,8 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     const [activeTab, setActiveTab] = useState('overview')
-    const [calWeek, setCalWeek] = useState(1)
+    // Default calendar week to user's batch (1 or 2)
+    const [calWeek, setCalWeek] = useState(user?.batch ?? 1)
 
     useEffect(() => {
         setLoading(true)
@@ -81,10 +83,12 @@ export default function Dashboard() {
                 </nav>
 
                 <div className="sidebar-user">
-                    <div className="user-av">{user?.username?.[0]?.toUpperCase()}</div>
+                    <div className="user-av">
+                        {user?.name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                    </div>
                     <div className="user-info">
-                        <div className="user-name">{user?.username}</div>
-                        <div className="user-role">Employee</div>
+                        <div className="user-name">{user?.name || user?.username}</div>
+                        <div className="user-role">{user?.employeeId} · {user?.role === 'designated' ? 'Designated' : 'Floater'}</div>
                     </div>
                     <button className="logout-btn" title="Sign out" onClick={logout}>↩</button>
                 </div>
@@ -99,6 +103,18 @@ export default function Dashboard() {
                         </h1>
                         <p className="page-date">{dateStr}</p>
                     </div>
+                    {/* Welcome banner — shown on overview only */}
+                    {activeTab === 'overview' && user?.name && (
+                        <div className="welcome-banner">
+                            <div className="wb-greeting">Welcome back 👋</div>
+                            <div className="wb-name">{user.name}</div>
+                            <div className="wb-meta">
+                                <span className="wb-tag">{user.employeeId}</span>
+                                <span className="wb-tag wb-batch">Batch {user.batch}</span>
+                                <span className="wb-tag">{user.team}</span>
+                            </div>
+                        </div>
+                    )}
                 </header>
 
                 {loading && (
@@ -119,6 +135,7 @@ export default function Dashboard() {
                         {/* ── Overview tab ───────────────────────────────── */}
                         {activeTab === 'overview' && (
                             <div className="overview-content">
+                                <ActionPanel />
                                 <div className="stats-grid">
                                     <StatCard label="Total Employees" value={stats?.totalEmployees ?? '—'} icon="👥" color="#6366f1" />
                                     <StatCard label="Seats Occupied" value={stats?.occupiedSeats ?? '—'} icon="💺" color="#3b82f6" />

@@ -8,6 +8,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -137,5 +142,31 @@ public class SecurityConfig {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    // ── In-memory users ───────────────────────────────────────────────
+    // Both users share the password "wissen123" for development.
+    // Keep roles in sync with AuthController.MOCK_USERS.
+    //   user  → DESIGNATED employee (Raj Patel, EMP-001, Batch 1)
+    //   admin → FLOATER employee   (Priya Sharma, EMP-002, Batch 2)
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return new InMemoryUserDetailsManager(
+            User.withUsername("user")
+                .password("wissen123")
+                .roles("USER")
+                .build(),
+            User.withUsername("admin")
+                .password("wissen123")
+                .roles("USER")
+                .build()
+        );
+    }
+
+    @SuppressWarnings("deprecation")
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        // NoOp is fine for local dev; replace with BCryptPasswordEncoder in prod
+        return NoOpPasswordEncoder.getInstance();
     }
 }

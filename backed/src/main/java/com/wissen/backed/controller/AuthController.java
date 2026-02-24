@@ -4,63 +4,109 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 /**
  * Authentication utility endpoints.
  *
- * GET  /api/auth/me     — returns current user info (or 401 if not logged in)
+ * GET  /api/auth/me     — returns full profile for the authenticated user
  * POST /api/auth/logout — invalidates session, returns JSON
  *
- * These are called by the React frontend to:
- *  1. Check if a session is still valid on page load (/api/auth/me)
- *  2. Log the user out cleanly (/api/auth/logout)
+ * Profile is resolved from MOCK_USERS in-memory map keyed by Spring Security
+ * username. Replace this map with a real EmployeeRepository when the DB is ready.
  *
- * Spring Security handles the 401 for /api/auth/me automatically
- * because all /api/** routes require authentication (see SecurityConfig).
+ * Mock users:
+ *   user  → Raj Patel   EMP-001  Batch 1  Team Alpha  Designated
+ *   admin → Priya Sharma EMP-002  Batch 2  Team Beta   Floater
+ *   (any other username gets a generic fallback profile)
  */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
     /**
+     * In-memory user profiles keyed by Spring Security username.
+     * Each profile contains the fields the frontend needs.
+     *
+     * Fields:
+     *   employeeId    — display ID shown in the dashboard header
+     *   name          — full display name
+     *   batch         — 1 or 2 (FIXED per user, used for calendar filtering)
+     *   team          — team name (Alpha, Beta, Gamma …)
+     *   role          — "designated" | "floater"
+     *   designatedSeat — seat ID if role is designated, null otherwise
+     */
+    private static final Map<String, Map<String, Object>> MOCK_USERS = Map.of(
+        "user", Map.of(
+            "employeeId",     "EMP-001",
+            "name",           "Raj Patel",
+            "batch",          1,
+            "team",           "Alpha",
+            "role",           "designated",
+            "designatedSeat", "D-01"
+        ),
+        "admin", Map.of(
+            "employeeId",     "EMP-002",
+            "name",           "Priya Sharma",
+            "batch",          2,
+            "team",           "Beta",
+            "role",           "floater",
+            "designatedSeat", ""
+        )
+    );
+
+    // ── Endpoints ─────────────────────────────────────────────────────────
+
+    /**
      * GET /api/auth/me
      *
-     * Returns the currently authenticated user's basic info.
-     * If not authenticated, Spring Security returns 401 JSON automatically.
+     * Returns the profile of the currently authenticated user.
+     * Spring Security's 401 JSON entry point handles the unauthenticated case.
      *
      * Response 200:
      * {
-     *   "username": "user",
-     *   "authenticated": true
+     *   "username":       "user",
+     *   "employeeId":     "EMP-001",
+     *   "name":           "Raj Patel",
+     *   "batch":          1,
+     *   "team":           "Alpha",
+     *   "role":           "designated",
+     *   "designatedSeat": "D-01",
+     *   "authenticated":  true
      * }
-     *
-     * TODO: Replace with employeeRepository.findByUsername(auth.getName())
-     *       to return full employee profile (id, name, role, batch, team, designatedSeat)
      */
     @GetMapping("/me")
     public ResponseEntity<?> me(Authentication auth) {
-        return ResponseEntity.ok(Map.of(
-            "username",      auth.getName(),
-            "authenticated", true
-            // TODO: add employeeId, name, role, batch, team, designatedSeat
+        String username = auth.getName();
+
+        // Look up full profile; fall back to a generic profile if username not in map
+        Map<String, Object> profile = MOCK_USERS.getOrDefault(username, Map.of(
+            "employeeId",     "EMP-999",
+            "name",           username,
+            "batch",          1,
+            "team",           "General",
+            "role",           "floater",
+            "designatedSeat", ""
         ));
+
+        // Build response: merge profile + meta fields
+        var response = new java.util.LinkedHashMap<String, Object>();
+        response.put("username",      username);
+        response.put("authenticated", true);
+        response.putAll(profile);
+
+        return ResponseEntity.ok(response);
     }
 
     /**
      * POST /api/auth/logout
      *
-     * Invalidates the current HTTP session and returns confirmation JSON.
-     * The JSESSIONID cookie is cleared by the browser automatically
-     * since the session is invalidated server-side.
+     * Invalidates the current HTTP session. The browser discards the
+     * JSESSIONID cookie automatically when the session is gone server-side.
      *
-     * Response 200:
-     * { "status": "LOGGED_OUT" }
+     * Response 200: { "status": "LOGGED_OUT" }
      */
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
