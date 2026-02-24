@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Seat Allocation System</title>
+    <meta name="description"
+        content="Enterprise office seat booking for hybrid employees — batch scheduling, designated and floater seats, leave management." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+    <!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                    <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                    <rect x="14" y="14" width="7" height="7" rx="1.5" />
+                    <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                </svg>
+            </div>
+            <div class="brand-text">
+                <span class="brand-name">SmartSeat</span>
+                <span class="brand-sub">Allocation System</span>
+            </div>
+        </div>
+
+        <!-- Main Nav -->
+        <nav class="sidebar-nav" aria-label="Main Navigation">
+            <div class="nav-section-label">Main Menu</div>
+            <button class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard')" aria-current="page">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="14" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                    </svg>
+                </span>
+                <span class="nav-label">Dashboard</span>
+                <span class="nav-badge" id="nav-badge-dashboard"></span>
+            </button>
+            <button class="nav-item" id="nav-seats" onclick="showPage('seats')">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v3" />
+                        <path d="M2 11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9H2v2z" />
+                        <path d="M6 21v-5" />
+                        <path d="M18 21v-5" />
+                        <path d="M4 16h16" />
+                    </svg>
+                </span>
+                <span class="nav-label">Seat Layout</span>
+                <span class="nav-badge" id="nav-badge-seats" data-count="14">14</span>
+            </button>
+            <button class="nav-item" id="nav-calendar" onclick="showPage('calendar')">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                </span>
+                <span class="nav-label">Weekly Calendar</span>
+                <span class="nav-badge" id="nav-badge-calendar"></span>
+            </button>
+            <button class="nav-item" id="nav-leave" onclick="showPage('leave')">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                </span>
+                <span class="nav-label">Leave Management</span>
+                <span class="nav-badge pending" id="nav-badge-leave" data-count="1">1</span>
+            </button>
+
+            <div class="nav-section-label" style="margin-top:10px">Quick Book</div>
+            <button class="nav-item nav-book-cta" onclick="openBookingModal(null)">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="16" />
+                        <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg>
+                </span>
+                <span class="nav-label">Book a Seat</span>
+            </button>
+        </nav>
+
+        <!-- Sidebar Footer: User Info -->
+        <div class="sidebar-footer">
+            <div class="sidebar-user-card" id="sidebar-user-card">
+                <div class="user-avatar-wrap">
+                    <div class="user-avatar" id="sidebar-user-avatar">RP</div>
+                    <span class="user-online-dot"></span>
+                </div>
+                <div class="user-meta">
+                    <div class="user-fullname" id="sidebar-user-name">Raj Patel</div>
+                    <div class="user-detail">
+                        <span class="role-pill designated" id="sidebar-user-role">Designated</span>
+                        <span class="user-eid" id="sidebar-user-eid">EMP-042</span>
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-team-chip" id="sidebar-team-chip">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                Team Delta · Batch 1
+            </div>
+        </div>
+    </aside>
+
+    <!-- ═══════════════════════════ TOPBAR ═══════════════════════════ -->
+    <header class="topbar" role="banner">
+        <div class="topbar-left">
+            <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+                <span class="breadcrumb-root">Smart Seat Allocation</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+                <span class="breadcrumb-current" id="page-title">Dashboard</span>
+            </nav>
+            <div class="topbar-date" id="topbar-date" aria-label="Today's date">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                <span id="today-date-display">Tuesday, 24 February 2026</span>
+            </div>
+        </div>
+        <div class="topbar-right">
+            <!-- Booking Window -->
+            <div class="booking-window-pill" id="booking-window-pill" role="status" aria-live="polite">
+                <span class="bw-dot" id="bw-dot"></span>
+                <span id="bw-label">Checking booking window…</span>
+            </div>
+            <!-- Batch Indicator -->
+            <div class="batch-pill" id="topbar-batch">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span id="batch-label">Batch 1 · Week 1</span>
+            </div>
+            <!-- Notifications -->
+            <button class="icon-btn" id="notif-btn" aria-label="Notifications" title="Notifications">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+                <span class="icon-btn-dot" id="notif-dot"></span>
+            </button>
+            <!-- Profile -->
+            <button class="topbar-avatar" id="topbar-avatar" aria-label="User profile">RP</button>
+        </div>
+    </header>
+
+    <!-- ═══════════════════════════ MAIN CONTENT ═══════════════════════════ -->
+    <main class="main-content" id="main-content">
+
+        <!-- ╔══════════════════════════════════════════════════╗
+       ║                   DASHBOARD                      ║
+       ╚══════════════════════════════════════════════════╝ -->
+        <section class="page active" id="page-dashboard" aria-label="Dashboard">
+
+            <!-- Stat Cards Row -->
+            <div class="stats-row" id="stats-row">
+                <div class="stat-card" id="stat-total-employees" data-value="80">
+                    <div class="sc-top">
+                        <div class="sc-icon sc-blue">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        </div>
+                        <div class="sc-delta sc-delta-up">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="3">
+                                <polyline points="18 15 12 9 6 15" />
+                            </svg>
+                            10 teams
+                        </div>
+                    </div>
+                    <div class="sc-value" id="val-total-employees">80</div>
+                    <div class="sc-label">Total Employees</div>
+                    <div class="sc-sub" id="sub-total-employees">Batch 1: 40 · Batch 2: 40</div>
+                </div>
+
+                <div class="stat-card" id="stat-available-seats" data-value="14">
+                    <div class="sc-top">
+                        <div class="sc-icon sc-green">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v3" />
+                                <path d="M2 11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9H2v2z" />
+                                <path d="M6 21v-5" />
+                                <path d="M18 21v-5" />
+                                <path d="M4 16h16" />
+                            </svg>
+                        </div>
+                        <div class="sc-delta sc-delta-up">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="3">
+                                <polyline points="18 15 12 9 6 15" />
+                            </svg>
+                            +3 released
+                        </div>
+                    </div>
+                    <div class="sc-value" id="val-available-seats">14</div>
+                    <div class="sc-label">Available Seats</div>
+                    <div class="sc-sub" id="sub-available-seats">4 designated · 10 floater</div>
+                </div>
+
+                <div class="stat-card" id="stat-occupied-today" data-value="36">
+                    <div class="sc-top">
+                        <div class="sc-icon sc-orange">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                        </div>
+                        <div class="sc-delta sc-delta-neutral">72% utilization</div>
+                    </div>
+                    <div class="sc-value" id="val-occupied-today">36</div>
+                    <div class="sc-label">Occupied Today</div>
+                    <div class="sc-sub" id="sub-occupied-today">33 designated · 3 floater</div>
+                </div>
+
+                <div class="stat-card" id="stat-leaves-today" data-value="5">
+                    <div class="sc-top">
+                        <div class="sc-icon sc-red">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="16" y1="13" x2="8" y2="13" />
+                                <line x1="16" y1="17" x2="8" y2="17" />
+                            </svg>
+                        </div>
+                        <div class="sc-delta sc-delta-warn">3 seats released</div>
+                    </div>
+                    <div class="sc-value" id="val-leaves-today">5</div>
+                    <div class="sc-label">Leaves Today</div>
+                    <div class="sc-sub" id="sub-leaves-today">3 designated · 2 non-designated</div>
+                </div>
+            </div>
+
+            <!-- Main dashboard grid -->
+            <div class="dash-grid">
+
+                <!-- Seat availability donut -->
+                <div class="card donut-card" id="donut-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Seat Availability</h2>
+                        <span class="card-pill" id="donut-date-label">Today · Tue 24 Feb</span>
+                    </div>
+
+                    <div class="donut-layout">
+                        <div class="donut-wrap">
+                            <svg id="donut-svg" viewBox="0 0 144 144" aria-label="Seat availability donut chart">
+                                <!-- Track -->
+                                <circle cx="72" cy="72" r="55" fill="none" stroke="#F1F5F9" stroke-width="18" />
+                                <!-- Occupied designated (red) -->
+                                <circle id="donut-seg-occ-des" cx="72" cy="72" r="55" fill="none" stroke="#EF4444"
+                                    stroke-width="18" stroke-dasharray="207 139" stroke-dashoffset="90"
+                                    stroke-linecap="butt" />
+                                <!-- Occupied floater (orange) -->
+                                <circle id="donut-seg-occ-flt" cx="72" cy="72" r="55" fill="none" stroke="#F97316"
+                                    stroke-width="18" stroke-dasharray="19 327" stroke-dashoffset="-117"
+                                    stroke-linecap="butt" />
+                                <!-- Free designated (blue) -->
+                                <circle id="donut-seg-free-des" cx="72" cy="72" r="55" fill="none" stroke="#3B82F6"
+                                    stroke-width="18" stroke-dasharray="24 322" stroke-dashoffset="-136"
+                                    stroke-linecap="butt" />
+                                <!-- Free floater (amber) -->
+                                <circle id="donut-seg-free-flt" cx="72" cy="72" r="55" fill="none" stroke="#F59E0B"
+                                    stroke-width="18" stroke-dasharray="96 250" stroke-dashoffset="-160"
+                                    stroke-linecap="butt" />
+                                <!-- Center text -->
+                                <text x="72" y="67" text-anchor="middle" class="donut-num"
+                                    id="donut-center-num">50</text>
+                                <text x="72" y="82" text-anchor="middle" class="donut-tiny">Total Seats</text>
+                            </svg>
+                        </div>
+                        <div class="donut-legend" id="donut-legend">
+                            <div class="dl-row">
+                                <span class="dl-swatch" style="background:#EF4444"></span>
+                                <span class="dl-label">Designated Occupied</span>
+                                <span class="dl-val" id="dl-occ-des">33</span>
+                            </div>
+                            <div class="dl-row">
+                                <span class="dl-swatch" style="background:#F97316"></span>
+                                <span class="dl-label">Floater Occupied</span>
+                                <span class="dl-val" id="dl-occ-flt">3</span>
+                            </div>
+                            <div class="dl-row">
+                                <span class="dl-swatch" style="background:#3B82F6"></span>
+                                <span class="dl-label">Designated Free</span>
+                                <span class="dl-val" id="dl-free-des">4</span>
+                            </div>
+                            <div class="dl-row">
+                                <span class="dl-swatch" style="background:#F59E0B"></span>
+                                <span class="dl-label">Floater Free</span>
+                                <span class="dl-val" id="dl-free-flt">8</span>
+                            </div>
+                            <div class="dl-row dl-row-total">
+                                <span class="dl-swatch" style="background:#94A3B8"></span>
+                                <span class="dl-label">Leave-Released to Pool</span>
+                                <span class="dl-val" id="dl-released">2</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Booking window inline banner -->
+                    <div class="bw-inline-banner" id="bw-inline-banner">
+                        <div class="bwib-left">
+                            <div class="bwib-icon">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="bwib-title" id="bwib-title">Booking Window Open</div>
+                                <div class="bwib-sub" id="bwib-sub">Today 3:00 PM → Tomorrow 8:00 AM</div>
+                            </div>
+                        </div>
+                        <button class="btn-book" id="bwib-book-btn" onclick="openBookingModal(null)">Book Seat</button>
+                    </div>
+                </div>
+
+                <!-- Today's status list -->
+                <div class="card status-card" id="status-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Today's Working Status</h2>
+                        <span class="live-pill">
+                            <span class="live-dot"></span>Live
+                        </span>
+                    </div>
+                    <div class="status-tabs">
+                        <button class="stab active" onclick="filterStatus('all', this)" id="stab-all">All <em
+                                id="stab-all-count">36</em></button>
+                        <button class="stab" onclick="filterStatus('checked-in', this)">Checked In <em
+                                id="stab-ci-count">22</em></button>
+                        <button class="stab" onclick="filterStatus('booked', this)">Booked <em
+                                id="stab-booked-count">9</em></button>
+                        <button class="stab" onclick="filterStatus('remote', this)">Remote <em
+                                id="stab-remote-count">3</em></button>
+                        <button class="stab" onclick="filterStatus('on-leave', this)">Leave <em
+                                id="stab-leave-count">5</em></button>
+                    </div>
+                    <div class="status-list" id="status-list">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="status-footer">
+                        <span id="status-showing">Showing all 36 in-office today</span>
+                    </div>
+                </div>
+
+                <!-- Batch schedule summary -->
+                <div class="card batch-card" id="batch-summary-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Batch Schedule</h2>
+                        <span class="card-pill">Feb – Mar 2026</span>
+                    </div>
+                    <div class="batch-grid" id="batch-grid">
+                        <div class="batch-row header">
+                            <div class="batch-cell"></div>
+                            <div class="batch-cell">Week 1</div>
+                            <div class="batch-cell">Week 2</div>
+                        </div>
+                        <div class="batch-row">
+                            <div class="batch-cell label">
+                                <span class="batch-pill b1">B1</span> Batch 1
+                            </div>
+                            <div class="batch-cell">
+                                <div class="batch-days">
+                                    <span class="bday work">M</span><span class="bday work">T</span><span
+                                        class="bday work">W</span>
+                                    <span class="bday off">T</span><span class="bday off">F</span>
+                                </div>
+                            </div>
+                            <div class="batch-cell">
+                                <div class="batch-days">
+                                    <span class="bday off">M</span><span class="bday off">T</span><span
+                                        class="bday off">W</span>
+                                    <span class="bday work">T</span><span class="bday work">F</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="batch-row">
+                            <div class="batch-cell label">
+                                <span class="batch-pill b2">B2</span> Batch 2
+                            </div>
+                            <div class="batch-cell">
+                                <div class="batch-days">
+                                    <span class="bday off">M</span><span class="bday off">T</span><span
+                                        class="bday off">W</span>
+                                    <span class="bday work">T</span><span class="bday work">F</span>
+                                </div>
+                            </div>
+                            <div class="batch-cell">
+                                <div class="batch-days">
+                                    <span class="bday work">M</span><span class="bday work">T</span><span
+                                        class="bday work">W</span>
+                                    <span class="bday off">T</span><span class="bday off">F</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="team-grid-wrap">
+                        <div class="tg-header">Teams Overview</div>
+                        <div class="team-grid" id="team-grid">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card qa-card" id="qa-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Quick Actions</h2>
+                    </div>
+                    <div class="qa-grid">
+                        <button class="qa-btn" onclick="showPage('seats')">
+                            <div class="qa-icon qi-blue">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M20 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v3" />
+                                    <path d="M2 11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9H2v2z" />
+                                    <path d="M6 21v-5" />
+                                    <path d="M18 21v-5" />
+                                    <path d="M4 16h16" />
+                                </svg>
+                            </div>
+                            <div class="qa-text">
+                                <div class="qa-name">View Seat Layout</div>
+                                <div class="qa-sub">14 seats available</div>
+                            </div>
+                            <svg class="qa-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </button>
+                        <button class="qa-btn" onclick="openBookingModal(null)">
+                            <div class="qa-icon qi-green">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="16" />
+                                    <line x1="8" y1="12" x2="16" y2="12" />
+                                </svg>
+                            </div>
+                            <div class="qa-text">
+                                <div class="qa-name">Book a Seat</div>
+                                <div class="qa-sub">Next working day</div>
+                            </div>
+                            <svg class="qa-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </button>
+                        <button class="qa-btn" onclick="showPage('leave')">
+                            <div class="qa-icon qi-amber">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                    <polyline points="14 2 14 8 20 8" />
+                                    <line x1="16" y1="13" x2="8" y2="13" />
+                                    <line x1="16" y1="17" x2="8" y2="17" />
+                                </svg>
+                            </div>
+                            <div class="qa-text">
+                                <div class="qa-name">Apply Leave</div>
+                                <div class="qa-sub">Seat auto-released</div>
+                            </div>
+                            <svg class="qa-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </button>
+                        <button class="qa-btn" onclick="showPage('calendar')">
+                            <div class="qa-icon qi-purple">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                            </div>
+                            <div class="qa-text">
+                                <div class="qa-name">Weekly Calendar</div>
+                                <div class="qa-sub">View batch schedule</div>
+                            </div>
+                            <svg class="qa-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ╔══════════════════════════════════════════════════╗
+       ║                 SEAT LAYOUT                      ║
+       ╚══════════════════════════════════════════════════╝ -->
+        <section class="page" id="page-seats" aria-label="Seat Layout">
+
+            <!-- Controls bar -->
+            <div class="card seat-controls-bar" id="seat-controls-bar">
+                <div class="legend-row" id="seat-legend">
+                    <div class="leg-item"><span class="leg-dot"
+                            style="background:#3B82F6; border-color:#93C5FD"></span>Designated (Available)</div>
+                    <div class="leg-item"><span class="leg-dot"
+                            style="background:#22C55E; border-color:#86EFAC"></span>Floater (Available)</div>
+                    <div class="leg-item"><span class="leg-dot"
+                            style="background:#EF4444; border-color:#FCA5A5"></span>Occupied</div>
+                    <div class="leg-item"><span class="leg-dot"
+                            style="background:#A78BFA; border-color:#C4B5FD"></span>Your Seat</div>
+                    <div class="leg-item"><span class="leg-dot"
+                            style="background:#F59E0B; border-color:#FCD34D"></span>Leave-Released</div>
+                </div>
+                <div class="seat-filter-group" id="seat-filter-group" role="group" aria-label="Filter seats">
+                    <button class="pill-btn active" onclick="filterSeats('all', this)" id="sf-all">All (50)</button>
+                    <button class="pill-btn" onclick="filterSeats('available', this)" id="sf-avail">Free (14)</button>
+                    <button class="pill-btn" onclick="filterSeats('occupied', this)" id="sf-occ">Occupied (36)</button>
+                    <button class="pill-btn" onclick="filterSeats('designated', this)" id="sf-des">Designated</button>
+                    <button class="pill-btn" onclick="filterSeats('floater', this)" id="sf-flt">Floater</button>
+                </div>
+            </div>
+
+            <!-- Floor plan -->
+            <div class="card floor-card" id="floor-card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Floor Plan — Level 3</h2>
+                        <div class="floor-meta" id="floor-meta">Zone A · 40 Designated &nbsp;|&nbsp; Zone B · 10 Floater
+                        </div>
+                    </div>
+                    <div class="floor-counters">
+                        <span class="fc fc-occ" id="fc-occ">36 Occupied</span>
+                        <span class="fc fc-free" id="fc-free">14 Free</span>
+                    </div>
+                </div>
+
+                <!-- Zone A: Designated -->
+                <div class="zone-header">
+                    <div class="zone-tag tag-blue">Zone A</div>
+                    <span class="zone-name">Designated Seats &nbsp;(D-01 → D-40)</span>
+                    <span class="zone-count" id="zone-a-count">36 occupied · 4 free</span>
+                </div>
+                <div class="seat-grid" id="grid-designated" role="list" aria-label="Designated seats"></div>
+
+                <div class="zone-sep"></div>
+
+                <!-- Zone B: Floater -->
+                <div class="zone-header">
+                    <div class="zone-tag tag-amber">Zone B</div>
+                    <span class="zone-name">Floater Seats &nbsp;(F-01 → F-10)</span>
+                    <span class="zone-count" id="zone-b-count">0 occupied · 10 free</span>
+                </div>
+                <div class="seat-grid" id="grid-floater" role="list" aria-label="Floater seats"></div>
+            </div>
+
+            <!-- Seat detail side panel (shown on click) -->
+            <div class="card seat-detail-card" id="seat-detail-card" style="display:none" role="region"
+                aria-label="Seat details">
+                <div class="card-header">
+                    <h2 class="card-title" id="sd-title">Seat D-12</h2>
+                    <button class="icon-btn" onclick="closeSeatDetail()" aria-label="Close detail panel">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="sd-grid">
+                    <div class="sd-item">
+                        <div class="sd-key">Type</div>
+                        <div class="sd-val" id="sd-type">Designated</div>
+                    </div>
+                    <div class="sd-item">
+                        <div class="sd-key">Zone</div>
+                        <div class="sd-val" id="sd-zone">Zone A</div>
+                    </div>
+                    <div class="sd-item">
+                        <div class="sd-key">Status</div>
+                        <div class="sd-val" id="sd-status">—</div>
+                    </div>
+                    <div class="sd-item">
+                        <div class="sd-key">Occupant</div>
+                        <div class="sd-val" id="sd-occupant">—</div>
+                    </div>
+                    <div class="sd-item">
+                        <div class="sd-key">Team</div>
+                        <div class="sd-val" id="sd-team">—</div>
+                    </div>
+                    <div class="sd-item">
+                        <div class="sd-key">Batch</div>
+                        <div class="sd-val" id="sd-batch">—</div>
+                    </div>
+                    <div class="sd-item">
+                        <div class="sd-key">Check-in</div>
+                        <div class="sd-val" id="sd-checkin">—</div>
+                    </div>
+                    <div class="sd-item">
+                        <div class="sd-key">Week</div>
+                        <div class="sd-val" id="sd-week">Week 1</div>
+                    </div>
+                </div>
+                <div class="sd-actions" id="sd-actions">
+                    <button class="btn-outline" onclick="closeSeatDetail()">Close</button>
+                    <button class="btn-primary" id="sd-book-btn" onclick="openBookingModal(currentSeat)">Book This
+                        Seat</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ╔══════════════════════════════════════════════════╗
+       ║               WEEKLY CALENDAR                    ║
+       ╚══════════════════════════════════════════════════╝ -->
+        <section class="page" id="page-calendar" aria-label="Weekly Calendar">
+
+            <!-- Week switcher + legend -->
+            <div class="cal-top-bar">
+                <div class="week-switcher" role="tablist" aria-label="Select week">
+                    <button class="week-btn active" id="wb-1" role="tab" aria-selected="true" onclick="switchWeek(1)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        Week 1 <span class="week-range">Feb 23 – Feb 27</span>
+                    </button>
+                    <button class="week-btn" id="wb-2" role="tab" aria-selected="false" onclick="switchWeek(2)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        Week 2 <span class="week-range">Mar 02 – Mar 06</span>
+                    </button>
+                </div>
+                <div class="cal-legend">
+                    <div class="cleg"><span class="cleg-dot" style="background:#3B82F6"></span>Designated</div>
+                    <div class="cleg"><span class="cleg-dot" style="background:#F59E0B"></span>Floater</div>
+                    <div class="cleg"><span class="cleg-dot" style="background:#EF4444"></span>Leave</div>
+                    <div class="cleg"><span class="cleg-dot" style="background:#22C55E"></span>Remote</div>
+                    <div class="cleg"><span class="cleg-dot" style="background:#CBD5E1"></span>Holiday / Off-Batch</div>
+                </div>
+            </div>
+
+            <!-- Batch filter -->
+            <div class="cal-batch-filter">
+                <button class="pill-btn active" id="cbf-all" onclick="filterCalBatch('all',this)">All Employees</button>
+                <button class="pill-btn" id="cbf-b1" onclick="filterCalBatch('1',this)">Batch 1 Only</button>
+                <button class="pill-btn" id="cbf-b2" onclick="filterCalBatch('2',this)">Batch 2 Only</button>
+            </div>
+
+            <!-- Week 1 calendar -->
+            <div class="card cal-card" id="cal-week-1" role="tabpanel" aria-labelledby="wb-1">
+                <div class="card-header">
+                    <h2 class="card-title">Week 1 — Seat Allocation <span class="week-tag">Feb 23 (Mon) – Feb 27
+                            (Fri)</span></h2>
+                    <span class="cal-note">✓ = Checked in &nbsp; — = Off/Holiday</span>
+                </div>
+                <div class="cal-table-wrap">
+                    <table class="cal-table" id="cal-table-1" aria-label="Week 1 seat allocation">
+                        <thead id="cal-thead-1"></thead>
+                        <tbody id="cal-tbody-1"></tbody>
+                    </table>
+                </div>
+                <div class="cal-note-bar">
+                    <span>📅&nbsp; Weekends (Sat/Sun) are non-working days — booking disabled</span>
+                    <span>🔁&nbsp; Leave-released seats become floater pool seats for that day</span>
+                </div>
+            </div>
+
+            <!-- Week 2 calendar -->
+            <div class="card cal-card" id="cal-week-2" style="display:none" role="tabpanel" aria-labelledby="wb-2">
+                <div class="card-header">
+                    <h2 class="card-title">Week 2 — Seat Allocation <span class="week-tag">Mar 02 (Mon) – Mar 06
+                            (Fri)</span></h2>
+                    <span class="cal-note">✓ = Checked in &nbsp; — = Off/Holiday</span>
+                </div>
+                <div class="cal-table-wrap">
+                    <table class="cal-table" id="cal-table-2" aria-label="Week 2 seat allocation">
+                        <thead id="cal-thead-2"></thead>
+                        <tbody id="cal-tbody-2"></tbody>
+                    </table>
+                </div>
+                <div class="cal-note-bar">
+                    <span>📅&nbsp; Weekends (Sat/Sun) are non-working days — booking disabled</span>
+                    <span>🔁&nbsp; Leave-released seats become floater pool seats for that day</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ╔══════════════════════════════════════════════════╗
+       ║              LEAVE MANAGEMENT                    ║
+       ╚══════════════════════════════════════════════════╝ -->
+        <section class="page" id="page-leave" aria-label="Leave Management">
+
+            <!-- Top row: balance + auto-release info -->
+            <div class="leave-top-row">
+                <!-- Balance card -->
+                <div class="card leave-bal-card" id="leave-bal-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Leave Balance</h2>
+                        <span class="card-pill">FY 2025–26</span>
+                    </div>
+                    <div class="leave-bal-grid" id="leave-bal-grid">
+                        <div class="lbal-item">
+                            <div class="lbal-val" style="color:#3B82F6" id="lbal-casual">12</div>
+                            <div class="lbal-lbl">Casual Leaves</div>
+                            <div class="lbal-bar">
+                                <div class="lbal-fill" style="width:80%;background:#3B82F6"></div>
+                            </div>
+                            <div class="lbal-avail">Used: 3 &nbsp;·&nbsp; Remaining: 9</div>
+                        </div>
+                        <div class="lbal-item">
+                            <div class="lbal-val" style="color:#8B5CF6" id="lbal-sick">8</div>
+                            <div class="lbal-lbl">Sick Leaves</div>
+                            <div class="lbal-bar">
+                                <div class="lbal-fill" style="width:62%;background:#8B5CF6"></div>
+                            </div>
+                            <div class="lbal-avail">Used: 5 &nbsp;·&nbsp; Remaining: 3</div>
+                        </div>
+                        <div class="lbal-item">
+                            <div class="lbal-val" style="color:#F59E0B" id="lbal-earned">5</div>
+                            <div class="lbal-lbl">Earned Leaves</div>
+                            <div class="lbal-bar">
+                                <div class="lbal-fill" style="width:42%;background:#F59E0B"></div>
+                            </div>
+                            <div class="lbal-avail">Used: 2 &nbsp;·&nbsp; Remaining: 3</div>
+                        </div>
+                        <div class="lbal-item">
+                            <div class="lbal-val" style="color:#EC4899" id="lbal-comp">3</div>
+                            <div class="lbal-lbl">Comp-Off</div>
+                            <div class="lbal-bar">
+                                <div class="lbal-fill" style="width:30%;background:#EC4899"></div>
+                            </div>
+                            <div class="lbal-avail">Used: 1 &nbsp;·&nbsp; Remaining: 2</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auto-release info -->
+                <div class="card release-info-card" id="release-info-card">
+                    <div class="release-icon-wrap">
+                        <div class="release-icon">
+                            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3B82F6"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="17 1 21 5 17 9" />
+                                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                                <polyline points="7 23 3 19 7 15" />
+                                <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                            </svg>
+                        </div>
+                    </div>
+                    <h3 class="release-title">Auto Seat Release</h3>
+                    <p class="release-desc">When you apply leave for a working day, your <strong>designated seat
+                            D-12</strong> is automatically released to the floater pool — allowing non-designated
+                        colleagues to book it.</p>
+                    <div class="release-rule-list">
+                        <div class="rrl-item">
+                            <span class="rrl-dot" style="background:#22C55E"></span>
+                            Leave approved → Seat released to floater pool
+                        </div>
+                        <div class="rrl-item">
+                            <span class="rrl-dot" style="background:#3B82F6"></span>
+                            Leave cancelled → Seat returned to you
+                        </div>
+                        <div class="rrl-item">
+                            <span class="rrl-dot" style="background:#F59E0B"></span>
+                            Holiday leave → No seat action needed
+                        </div>
+                    </div>
+                    <div class="release-active-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Auto-release Active
+                    </div>
+                </div>
+            </div>
+
+            <!-- Apply leave form -->
+            <div class="card apply-card" id="apply-card">
+                <div class="card-header">
+                    <h2 class="card-title">Apply Leave</h2>
+                    <span class="card-pill">Your seat will be released for the duration</span>
+                </div>
+                <form id="leave-form" class="leave-form" onsubmit="submitLeave(event)" novalidate>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-lbl" for="f-leave-type">Leave Type</label>
+                            <select class="form-sel" id="f-leave-type" required>
+                                <option value="">Select type…</option>
+                                <option value="casual">Casual Leave</option>
+                                <option value="sick">Sick Leave</option>
+                                <option value="earned">Earned Leave</option>
+                                <option value="comp">Comp-Off</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-lbl" for="f-start">Start Date</label>
+                            <input class="form-inp" type="date" id="f-start" value="2026-02-27" min="2026-02-25"
+                                required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-lbl" for="f-end">End Date</label>
+                            <input class="form-inp" type="date" id="f-end" value="2026-02-27" min="2026-02-25"
+                                required />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-lbl" for="f-half">Half Day?</label>
+                            <select class="form-sel" id="f-half">
+                                <option value="no">Full Day</option>
+                                <option value="first">First Half</option>
+                                <option value="second">Second Half</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group fg-full">
+                            <label class="form-lbl" for="f-reason">Reason / Notes</label>
+                            <textarea class="form-txt" id="f-reason" rows="3"
+                                placeholder="Brief description (optional)…"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-lbl" for="f-manager">Notify Manager</label>
+                            <select class="form-sel" id="f-manager">
+                                <option>Deepak Sharma (Direct Manager)</option>
+                                <option>Anita Desai (HR)</option>
+                                <option>Both</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Seat release notice (dynamic) -->
+                    <div class="seat-release-notice" id="seat-release-notice">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        <span>Your designated seat <strong>D-12</strong> will be automatically released to the floater
+                            pool for the selected leave dates.</span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-outline" onclick="resetLeaveForm()">Clear Form</button>
+                        <button type="submit" class="btn-primary">Submit Leave Request</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Leave history -->
+            <div class="card history-card" id="history-card">
+                <div class="card-header">
+                    <h2 class="card-title">Leave History</h2>
+                    <div class="history-filter">
+                        <select class="form-sel sm-sel" id="history-filter-sel" onchange="filterHistory(this.value)">
+                            <option value="all">All Statuses</option>
+                            <option value="approved">Approved</option>
+                            <option value="pending">Pending</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-wrap">
+                    <table class="data-table" id="history-table" aria-label="Leave history">
+                        <thead>
+                            <tr>
+                                <th>Date(s)</th>
+                                <th>Type</th>
+                                <th>Days</th>
+                                <th>Half Day</th>
+                                <th>Reason</th>
+                                <th>Seat Action</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-tbody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ═══════════════════════════ BOOKING MODAL ═══════════════════════════ -->
+    <div class="modal-backdrop" id="modal-backdrop" onclick="closeBookingModal()" role="dialog" aria-modal="true"
+        aria-labelledby="modal-title">
+        <div class="modal" onclick="event.stopPropagation()" id="booking-modal">
+            <!-- Modal Header -->
+            <div class="modal-hd">
+                <div class="modal-hd-icon" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 9V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v3" />
+                        <path d="M2 11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9H2v2z" />
+                        <path d="M6 21v-5" />
+                        <path d="M18 21v-5" />
+                        <path d="M4 16h16" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="modal-title" id="modal-title">Confirm Seat Booking</div>
+                    <div class="modal-sub">Review details before confirming</div>
+                </div>
+                <button class="modal-close-btn" onclick="closeBookingModal()" aria-label="Close modal">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Seat Selector (for non-designated) -->
+            <div class="modal-seat-selector" id="modal-seat-selector" style="display:none">
+                <label class="form-lbl" for="modal-seat-sel">Select Floater Seat</label>
+                <select class="form-sel" id="modal-seat-sel" onchange="updateModalSeat()">
+                    <option value="">— Choose a seat —</option>
+                    <option value="F-01">F-01 (Free)</option>
+                    <option value="F-02">F-02 (Free)</option>
+                    <option value="F-03">F-03 (Free)</option>
+                    <option value="F-04">F-04 (Free)</option>
+                    <option value="F-05">F-05 (Free)</option>
+                    <option value="F-06">F-06 (Free)</option>
+                    <option value="F-07">F-07 (Free)</option>
+                    <option value="F-08">F-08 (Free)</option>
+                </select>
+            </div>
+
+            <!-- Details grid -->
+            <div class="modal-body">
+                <div class="modal-details-grid" id="modal-details-grid">
+                    <div class="mdg-item">
+                        <div class="mdg-key">Employee</div>
+                        <div class="mdg-val" id="md-employee">Raj Patel</div>
+                    </div>
+                    <div class="mdg-item">
+                        <div class="mdg-key">Employee ID</div>
+                        <div class="mdg-val" id="md-empid">EMP-042</div>
+                    </div>
+                    <div class="mdg-item">
+                        <div class="mdg-key">Seat Number</div>
+                        <div class="mdg-val seat-num-big" id="md-seat">D-12</div>
+                    </div>
+                    <div class="mdg-item">
+                        <div class="mdg-key">Seat Type</div>
+                        <div class="mdg-val" id="md-type">
+                            <span class="type-chip type-des">Designated</span>
+                        </div>
+                    </div>
+                    <div class="mdg-item">
+                        <div class="mdg-key">Zone</div>
+                        <div class="mdg-val" id="md-zone">Zone A — Level 3</div>
+                    </div>
+                    <div class="mdg-item">
+                        <div class="mdg-key">Booking Date</div>
+                        <div class="mdg-val" id="md-date">Wed, 25 Feb 2026</div>
+                    </div>
+                    <div class="mdg-item">
+                        <div class="mdg-key">Batch / Week</div>
+                        <div class="mdg-val" id="md-batch">Batch 1 · Week 1</div>
+                    </div>
+                    <div class="mdg-item">
+                        <div class="mdg-key">Booking Window</div>
+                        <div class="mdg-val" id="md-window">3:00 PM → 8:00 AM</div>
+                    </div>
+                </div>
+
+                <!-- Warning notice -->
+                <div class="modal-notice" id="modal-notice">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    <span>Booking is valid within the active window only. Cancellations must be done <strong>at least 2
+                            hours</strong> before check-in time.</span>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-ft" id="modal-footer">
+                <button class="btn-outline" onclick="closeBookingModal()">Cancel</button>
+                <button class="btn-primary" id="modal-confirm-btn" onclick="confirmBooking()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    Confirm Booking
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ TOAST CONTAINER ═══ -->
+    <div class="toast-stack" id="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

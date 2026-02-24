@@ -1,0 +1,112 @@
+.seat-grid-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.seat-section-label {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    color: #64748b;
+    margin-bottom: .75rem;
+}
+
+.seat-badge {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 99px;
+    padding: 2px 9px;
+    font-size: .72rem;
+    color: #94a3b8;
+}
+
+.seat-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: .6rem;
+}
+
+.compact .seat-tiles {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+}
+
+.seat-empty {
+    color: #475569;
+    font-size: .875rem;
+    padding: 1rem 0;
+}
+
+/* ── Tile ─────────────────────────────────────────────────────── */
+.seat-tile {
+    border-radius: 10px;
+    padding: .6rem .75rem;
+    border: 1px solid transparent;
+    cursor: default;
+    transition: transform .12s;
+}
+
+.seat-tile:hover {
+    transform: translateY(-2px);
+}
+
+.tile-occupied {
+    background: rgba(59, 130, 246, .12);
+    border-color: rgba(59, 130, 246, .25);
+}
+
+.tile-free {
+    background: rgba(16, 185, 129, .08);
+    border-color: rgba(16, 185, 129, .20);
+}
+
+.tile-leave {
+    background: rgba(245, 158, 11, .1);
+    border-color: rgba(245, 158, 11, .25);
+}
+
+.tile-id {
+    font-size: .7rem;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.tile-name {
+    font-size: .78rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: .2rem;
+}
+
+.tile-meta {
+    font-size: .68rem;
+    color: #64748b;
+    margin-top: .15rem;
+}
+
+.tile-status {
+    font-size: .65rem;
+    font-weight: 600;
+    margin-top: .35rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.tile-status.tile-occupied {
+    color: #60a5fa;
+}
+
+.tile-status.tile-free {
+    color: #34d399;
+}
+
+.tile-status.tile-leave {
+    color: #fbbf24;
+}

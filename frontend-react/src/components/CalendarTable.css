@@ -1,0 +1,171 @@
+.cal-empty {
+    color: #475569;
+    font-size: .875rem;
+    padding: 2rem 0;
+}
+
+.cal-scroll {
+    overflow-x: auto;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.cal-table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 600px;
+    font-size: .8rem;
+}
+
+.cal-table thead th {
+    background: rgba(255, 255, 255, 0.04);
+    color: #94a3b8;
+    font-weight: 600;
+    text-align: center;
+    padding: .75rem .6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    white-space: nowrap;
+}
+
+.cal-table thead th.th-today {
+    background: rgba(59, 130, 246, .12);
+    color: #93c5fd;
+}
+
+.cal-table thead th.th-holiday {
+    background: rgba(245, 158, 11, .08);
+    color: #fcd34d;
+}
+
+.cal-emp-th {
+    text-align: left !important;
+    min-width: 180px;
+    padding-left: 1rem !important;
+}
+
+.th-label {
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.th-date {
+    font-size: .68rem;
+    color: #64748b;
+    margin-top: .15rem;
+}
+
+.th-today-badge {
+    display: inline-block;
+    margin-top: .25rem;
+    background: #3b82f6;
+    color: #fff;
+    font-size: .6rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 99px;
+}
+
+/* ── Body ──────────────────────────────────────────────────────── */
+.cal-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.015);
+}
+
+.cal-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.cal-table tbody td {
+    padding: .55rem .5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    text-align: center;
+    vertical-align: middle;
+}
+
+.cal-table tbody td.td-today {
+    background: rgba(59, 130, 246, .06);
+}
+
+.cal-table tbody td.td-holiday {
+    background: rgba(245, 158, 11, .04);
+}
+
+/* ── Employee cell ─────────────────────────────────────────────── */
+.cal-emp-cell {
+    text-align: left !important;
+    padding-left: .75rem !important;
+}
+
+.emp-row {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+}
+
+.emp-av {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.emp-info {
+    min-width: 0;
+}
+
+.emp-name {
+    font-size: .8rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    white-space: nowrap;
+}
+
+.emp-sub {
+    font-size: .68rem;
+    color: #475569;
+}
+
+/* ── Cell chips ───────────────────────────────────────────────── */
+.cc {
+    display: inline-block;
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: .7rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.cc-designated {
+    background: rgba(59, 130, 246, .15);
+    color: #93c5fd;
+}
+
+.cc-floater {
+    background: rgba(16, 185, 129, .12);
+    color: #6ee7b7;
+}
+
+.cc-leave {
+    background: rgba(245, 158, 11, .12);
+    color: #fcd34d;
+}
+
+.cc-off {
+    background: rgba(255, 255, 255, 0.05);
+    color: #475569;
+}
+
+.cc-holiday {
+    background: rgba(168, 85, 247, .12);
+    color: #d8b4fe;
+}
+
+.cc-remote {
+    background: rgba(6, 182, 212, .10);
+    color: #67e8f9;
+}
